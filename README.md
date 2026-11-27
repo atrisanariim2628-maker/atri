@@ -1,14 +1,12 @@
 # Atri Sana — Quant Finance Portfolio
 
-A static GitHub Pages portfolio for Atri Sana, adapted from the supplied HTML portfolio. It includes the CV, selected projects, milestones, contact links, responsive navigation, and print/save CV action.
+A static GitHub Pages portfolio adapted from the supplied HTML. It includes the CV, selected projects, milestones, contact links, responsive navigation, and print/save CV action.
 
 ## Deploy to GitHub Pages
 
-1. Create a separate public repository named `atri-sana-quant-finance-portfolio` under the `Atrisana` account and push these files to its `main` branch.
-2. In the repository, open **Settings → Pages** and choose **GitHub Actions** as the build and deployment source.
-3. The included workflow publishes the repository root on each push to `main`.
+The repository is `atrisanariim2628-maker/atri-sana-quant-finance-portfolio`. Its GitHub Actions workflow deploys the repository root to GitHub Pages whenever `main` is updated.
 
-The expected site URL is `https://atrisana.github.io/atri-sana-quant-finance-portfolio/` once GitHub Pages finishes its first deployment.
+The expected site URL is `https://atrisanariim2628-maker.github.io/atri-sana-quant-finance-portfolio/` after the first successful deployment.
 
 ## Local preview
 
