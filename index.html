@@ -1561,7 +1561,7 @@
         });
 
         optResults.style.display = 'block';
-        optStatus.textContent = 'Optimization complete.';
+        optStatus.textContent = `Optimization complete — ${data.optimization === 'min_volatility' ? 'Min-Volatility (fallback: returns below risk-free rate)' : 'Max-Sharpe'}.`;
       } catch (err) {
         optError.textContent = err.message || 'Failed to reach the optimization API.';
         optError.style.display = 'block';
