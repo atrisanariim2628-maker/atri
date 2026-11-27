@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
     :root {
       --teal: #0f766e;
@@ -714,8 +715,15 @@
 
     .opt-panels {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 20px;
+    }
+
+    .opt-pie-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 220px;
+      margin: 0 auto;
     }
 
     .opt-panel {
@@ -788,6 +796,12 @@
     .alloc-table th:last-child {
       text-align: right;
       font-weight: 600;
+    }
+
+    @media (max-width: 1020px) {
+      .opt-panels {
+        grid-template-columns: 1fr 1fr;
+      }
     }
 
     @media (max-width: 820px) {
@@ -1197,6 +1211,12 @@
                 <tbody id="optAllocBody"></tbody>
               </table>
             </div>
+            <div class="opt-panel" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <h4 style="align-self:flex-start">Weight Distribution</h4>
+              <div class="opt-pie-wrap">
+                <canvas id="optPieChart" aria-label="Portfolio weight distribution pie chart"></canvas>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1449,6 +1469,12 @@
     const optStatus = document.getElementById('optStatus');
     const optError = document.getElementById('optError');
     const optResults = document.getElementById('optResults');
+    let pieChart = null;
+
+    const PIE_COLORS = [
+      '#0f766e','#14b8a6','#5eead4','#115e59','#99f6e4',
+      '#0d9488','#2dd4bf','#047857','#34d399','#6ee7b7'
+    ];
 
     optResetBtn.addEventListener('click', () => {
       document.getElementById('optTickers').value = 'RELIANCE.NS,TCS.NS,HDFCBANK.NS,INFY.NS,ITC.NS,TATAMOTORS.NS';
@@ -1487,9 +1513,8 @@
 
         const weightsEl = document.getElementById('optWeights');
         weightsEl.innerHTML = '';
-        Object.entries(data.weights || {})
-          .sort((a, b) => b[1] - a[1])
-          .forEach(([ticker, pct]) => {
+        const sortedWeights = Object.entries(data.weights || {}).sort((a, b) => b[1] - a[1]);
+        sortedWeights.forEach(([ticker, pct]) => {
             const row = document.createElement('div');
             row.className = 'weight-row';
             row.innerHTML = `
@@ -1498,6 +1523,34 @@
             `;
             weightsEl.appendChild(row);
           });
+
+        // Doughnut pie chart
+        const pieLabels = sortedWeights.map(([t]) => t.replace('.NS',''));
+        const pieData   = sortedWeights.map(([, v]) => v);
+        const pieColors = ['#0f766e','#14b8a6','#5eead4','#115e59','#99f6e4','#0d9488','#2dd4bf','#047857','#34d399','#6ee7b7'];
+        const pieCtx = document.getElementById('optPieChart').getContext('2d');
+        if (pieChart) pieChart.destroy();
+        pieChart = new Chart(pieCtx, {
+          type: 'doughnut',
+          data: {
+            labels: pieLabels,
+            datasets: [{
+              data: pieData,
+              backgroundColor: pieColors.slice(0, pieLabels.length),
+              borderWidth: 2,
+              borderColor: '#ffffff',
+              hoverOffset: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            cutout: '58%',
+            plugins: {
+              legend: { position: 'bottom', labels: { font: { family: 'Inter, sans-serif', size: 11 }, padding: 10, boxWidth: 12 } },
+              tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` } }
+            }
+          }
+        });
 
         const allocBody = document.getElementById('optAllocBody');
         allocBody.innerHTML = '';
