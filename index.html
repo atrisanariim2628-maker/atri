@@ -1204,9 +1204,9 @@
         <form id="mptForm">
           <div class="opt-form-grid">
             <div class="opt-field">
-              <label for="optTickers">NSE Tickers (suffix .NS · comma-separated)</label>
-              <input id="optTickers" type="text" value="RELIANCE.NS,TCS.NS,HDFCBANK.NS,INFY.NS,ITC.NS,TATAMOTORS.NS" required />
-              <p class="opt-hint">Format: SYMBOL.NS &nbsp;·&nbsp; e.g. RELIANCE.NS, WIPRO.NS, SBIN.NS</p>
+              <label for="optTickers">NSE Stock Names (comma-separated)</label>
+              <input id="optTickers" type="text" value="RELIANCE,TCS,HDFCBANK,INFY,ITC,TATAMOTORS,WIPRO,AXISBANK,SBIN,BAJFINANCE" required />
+              <p class="opt-hint">Just type NSE symbols · e.g. RELIANCE, WIPRO, SBIN &nbsp;·&nbsp; <strong>.NS is added automatically</strong></p>
             </div>
             <div class="opt-field">
               <label for="optAmount">Capital (₹ INR)</label>
@@ -1526,11 +1526,11 @@
 
     // NSE India Index Presets
     const NSE_PRESETS = {
-      nifty50:    'RELIANCE.NS,TCS.NS,HDFCBANK.NS,INFY.NS,ITC.NS,TATAMOTORS.NS,WIPRO.NS,AXISBANK.NS,SBIN.NS,BAJFINANCE.NS',
-      niftybank:  'HDFCBANK.NS,ICICIBANK.NS,KOTAKBANK.NS,AXISBANK.NS,SBIN.NS,BANKBARODA.NS,INDUSINDBK.NS,FEDERALBNK.NS',
-      niftyit:    'TCS.NS,INFY.NS,WIPRO.NS,HCLTECH.NS,TECHM.NS,MPHASIS.NS,LTIM.NS,COFORGE.NS',
-      niftyauto:  'TATAMOTORS.NS,MARUTI.NS,M&M.NS,BAJAJ-AUTO.NS,EICHERMOT.NS,HEROMOTOCO.NS,TVSMOTOR.NS',
-      niftypharma:'SUNPHARMA.NS,DRREDDY.NS,CIPLA.NS,DIVISLAB.NS,AUROPHARMA.NS,LUPIN.NS,ALKEM.NS',
+      nifty50:    'RELIANCE,TCS,HDFCBANK,INFY,ITC,TATAMOTORS,WIPRO,AXISBANK,SBIN,BAJFINANCE',
+      niftybank:  'HDFCBANK,ICICIBANK,KOTAKBANK,AXISBANK,SBIN,BANKBARODA,INDUSINDBK,FEDERALBNK',
+      niftyit:    'TCS,INFY,WIPRO,HCLTECH,TECHM,MPHASIS,LTIM,COFORGE',
+      niftyauto:  'TATAMOTORS,MARUTI,M&M,BAJAJ-AUTO,EICHERMOT,HEROMOTOCO,TVSMOTOR',
+      niftypharma:'SUNPHARMA,DRREDDY,CIPLA,DIVISLAB,AUROPHARMA,LUPIN,ALKEM',
       custom:     '',
     };
     const DEFAULT_PRESET = 'nifty50';
@@ -1564,7 +1564,12 @@
 
     mptForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const tickers = document.getElementById('optTickers').value.trim();
+      // Auto-append .NS to each symbol (strip first in case user added it)
+      const rawInput = document.getElementById('optTickers').value.trim();
+      const tickers = rawInput.split(',')
+        .map(t => { const s = t.trim().toUpperCase().replace(/\.NS$/i,''); return s ? s + '.NS' : null; })
+        .filter(Boolean)
+        .join(',');
       const amount = document.getElementById('optAmount').value.trim();
       const start = document.getElementById('optStart').value;
       const end = document.getElementById('optEnd').value;
@@ -1604,9 +1609,13 @@
           });
 
         // Doughnut pie chart
-        const pieLabels = sortedWeights.map(([t]) => t.replace('.NS',''));
+        const pieLabels = sortedWeights.map(([t]) => t.replace(/\.NS$/i,''));
         const pieData   = sortedWeights.map(([, v]) => v);
-        const pieColors = ['#0f766e','#14b8a6','#5eead4','#115e59','#99f6e4','#0d9488','#2dd4bf','#047857','#34d399','#6ee7b7'];
+        const pieColors = [
+          '#e63946','#2a9d8f','#e9c46a','#264653','#f4a261',
+          '#6a4c93','#1982c4','#8ac926','#ff595e','#6a994e',
+          '#bc6c25','#4cc9f0','#f72585','#7209b7','#3a86ff'
+        ];
         const pieCtx = document.getElementById('optPieChart').getContext('2d');
         if (pieChart) pieChart.destroy();
         pieChart = new Chart(pieCtx, {
