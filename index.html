@@ -1667,5 +1667,54 @@
       }
     });
   </script>
+<section id="optimizer" class="optimizer-section">
+  <div class="container">
+    <p class="section-center-title">Live Quant Tool · NSE India</p>
+    <div class="news-feed">
+      <label for="news-symbol">Ticker (NSE): </label>
+      <input id="news-symbol" type="text" value="RELIANCE.NS" placeholder="e.g. TCS.NS" />
+      <button id="news-start">Start Live News</button>
+      <button id="news-stop" disabled>Stop</button>
+      <ul id="news-list" style="margin-top:1rem; max-height:300px; overflow:auto;"></ul>
+    </div>
+    <script>
+      let eventSource = null;
+      const startBtn = document.getElementById('news-start');
+      const stopBtn  = document.getElementById('news-stop');
+      const symbolInput = document.getElementById('news-symbol');
+      const newsList = document.getElementById('news-list');
+      function appendNews(item) {
+        const li = document.createElement('li');
+        li.style.padding = '0.3rem 0';
+        const a = document.createElement('a');
+        a.href = item.link;
+        a.target = '_blank';
+        a.textContent = item.title;
+        li.appendChild(a);
+        newsList.prepend(li);
+      }
+      startBtn.onclick = () => {
+        const symbol = encodeURIComponent(symbolInput.value.trim() || 'RELIANCE.NS');
+        if (eventSource) eventSource.close();
+        eventSource = new EventSource('https://atri-news-app.vercel.app/news-sse?symbol=' + symbol);
+        eventSource.onmessage = (e) => {
+          try { const data = JSON.parse(e.data); appendNews(data); }
+          catch (err) { console.error('bad news payload', err); }
+        };
+        eventSource.onerror = (err) => { console.error('SSE error', err); stop(); };
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        newsList.innerHTML = '';
+      };
+      function stop() {
+        if (eventSource) eventSource.close();
+        eventSource = null;
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+      }
+      stopBtn.onclick = stop;
+    </script>
+  </div>
+</section>
 </body>
 </html>
