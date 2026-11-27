@@ -524,6 +524,12 @@
 
     .milestone-slide.active {
       display: block;
+      animation: milestoneFade 0.4s ease;
+    }
+
+    @keyframes milestoneFade {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .milestone-quote {
@@ -1335,6 +1341,7 @@
           </div>
           <div class="opt-actions">
             <button type="submit" class="btn btn-teal" id="optRunBtn">⚡ Optimize Portfolio</button>
+            <button type="button" class="btn btn-ghost" id="optSampleBtn" style="color:var(--teal);border-color:var(--teal);">Load Sample Result</button>
             <button type="button" class="btn btn-ghost" id="optResetBtn" style="color:var(--ink);border-color:#cbd5e1;">Reset</button>
             <span class="opt-status" id="optStatus">Risk-free rate: RBI Repo 6.5% · Solver: Max-Sharpe → Min-Vol fallback</span>
           </div>
@@ -1596,16 +1603,57 @@
     modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
 
-    // Milestone Dots
-    const slides = document.querySelectorAll('.milestone-slide');
-    const dots = document.querySelectorAll('.dot');
-    dots.forEach((d) => {
-      d.addEventListener('click', () => {
-        const idx = Number(d.dataset.idx);
-        slides.forEach((s, i) => s.classList.toggle('active', i === idx));
-        dots.forEach((dt, i) => dt.classList.toggle('active', i === idx));
+    // Milestone Dots — Auto-advance & Touch Swipe
+    (function initMilestones() {
+      const section = document.getElementById('milestones');
+      const slides = document.querySelectorAll('.milestone-slide');
+      const dots = document.querySelectorAll('.dot');
+      if (!slides.length) return;
+
+      let activeIdx = 0;
+      let timer = null;
+      let touchStartX = 0;
+
+      function showSlide(idx) {
+        activeIdx = (idx + slides.length) % slides.length;
+        slides.forEach((s, i) => s.classList.toggle('active', i === activeIdx));
+        dots.forEach((dt, i) => dt.classList.toggle('active', i === activeIdx));
+      }
+
+      function startAuto() {
+        stopAuto();
+        timer = setInterval(() => showSlide(activeIdx + 1), 5500);
+      }
+
+      function stopAuto() {
+        if (timer) { clearInterval(timer); timer = null; }
+      }
+
+      dots.forEach((d) => {
+        d.addEventListener('click', () => {
+          showSlide(Number(d.dataset.idx));
+          startAuto();
+        });
       });
-    });
+
+      if (section) {
+        section.addEventListener('mouseenter', stopAuto);
+        section.addEventListener('mouseleave', startAuto);
+        section.addEventListener('focusin', stopAuto);
+        section.addEventListener('focusout', startAuto);
+        section.addEventListener('touchstart', (e) => {
+          touchStartX = e.changedTouches[0].clientX;
+          stopAuto();
+        }, { passive: true });
+        section.addEventListener('touchend', (e) => {
+          const dx = e.changedTouches[0].clientX - touchStartX;
+          if (Math.abs(dx) > 40) showSlide(activeIdx + (dx < 0 ? 1 : -1));
+          startAuto();
+        }, { passive: true });
+      }
+
+      startAuto();
+    })();
 
     // Scrollspy — update active nav link as user scrolls
     (function initScrollspy() {
@@ -1680,11 +1728,122 @@
     fetch(MPT_API_URL + '?tickers=RELIANCE.NS&amount=1000&start=2024-01-01&end=2024-01-02').catch(() => {});
     const mptForm = document.getElementById('mptForm');
     const optRunBtn = document.getElementById('optRunBtn');
+    const optSampleBtn = document.getElementById('optSampleBtn');
     const optResetBtn = document.getElementById('optResetBtn');
     const optStatus = document.getElementById('optStatus');
     const optError = document.getElementById('optError');
     const optResults = document.getElementById('optResults');
     let pieChart = null;
+
+    const SAMPLE_BACKTEST = {
+      optimization: 'max_sharpe',
+      performance: {
+        expected_annual_return: 21.4,
+        annual_volatility: 16.8,
+        sharpe_ratio: 0.89
+      },
+      leftover_cash: 1420,
+      weights: {
+        'RELIANCE.NS': 22.5,
+        'HDFCBANK.NS': 18.0,
+        'INFY.NS': 15.5,
+        'ITC.NS': 14.0,
+        'SBIN.NS': 12.5,
+        'TCS.NS': 10.0,
+        'BAJFINANCE.NS': 7.5
+      },
+      allocation: {
+        'RELIANCE.NS': 17,
+        'HDFCBANK.NS': 11,
+        'INFY.NS': 9,
+        'ITC.NS': 31,
+        'SBIN.NS': 15,
+        'TCS.NS': 3,
+        'BAJFINANCE.NS': 1
+      },
+      tickers_used: ['RELIANCE.NS', 'HDFCBANK.NS', 'INFY.NS', 'ITC.NS', 'SBIN.NS', 'TCS.NS', 'BAJFINANCE.NS']
+    };
+
+    function renderOptimizerResult(data, customStatus) {
+      const perf = data.performance || {};
+      document.getElementById('kpiReturn').textContent = perf.expected_annual_return != null ? `${perf.expected_annual_return}%` : '—';
+      document.getElementById('kpiVol').textContent = perf.annual_volatility != null ? `${perf.annual_volatility}%` : '—';
+      document.getElementById('kpiSharpe').textContent = perf.sharpe_ratio != null ? perf.sharpe_ratio : '—';
+      document.getElementById('kpiCash').textContent = data.leftover_cash != null ? `₹${Number(data.leftover_cash).toLocaleString('en-IN')}` : '—';
+
+      const weightsEl = document.getElementById('optWeights');
+      weightsEl.innerHTML = '';
+      const sortedWeights = Object.entries(data.weights || {}).sort((a, b) => b[1] - a[1]);
+      sortedWeights.forEach(([ticker, pct]) => {
+        const row = document.createElement('div');
+        row.className = 'weight-row';
+        row.innerHTML = `
+          <div class="weight-meta"><span>${ticker}</span><span>${pct}%</span></div>
+          <div class="weight-bar-bg"><div class="weight-bar-fill" style="width: ${Math.min(100, Math.max(0, pct))}%"></div></div>
+        `;
+        weightsEl.appendChild(row);
+      });
+
+      const pieLabels = sortedWeights.map(([t]) => t.replace(/\.NS$/i,''));
+      const pieData   = sortedWeights.map(([, v]) => v);
+      const pieColors = [
+        '#e63946','#2a9d8f','#e9c46a','#264653','#f4a261',
+        '#6a4c93','#1982c4','#8ac926','#ff595e','#6a994e',
+        '#bc6c25','#4cc9f0','#f72585','#7209b7','#3a86ff'
+      ];
+      const pieCtx = document.getElementById('optPieChart').getContext('2d');
+      if (pieChart) pieChart.destroy();
+      pieChart = new Chart(pieCtx, {
+        type: 'doughnut',
+        data: {
+          labels: pieLabels,
+          datasets: [{
+            data: pieData,
+            backgroundColor: pieColors.slice(0, pieLabels.length),
+            borderWidth: 2,
+            borderColor: '#ffffff',
+            hoverOffset: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          cutout: '58%',
+          plugins: {
+            legend: { position: 'bottom', labels: { font: { family: 'Inter, sans-serif', size: 11 }, padding: 10, boxWidth: 12 } },
+            tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` } }
+          }
+        }
+      });
+
+      const allocBody = document.getElementById('optAllocBody');
+      allocBody.innerHTML = '';
+      Object.entries(data.allocation || {}).forEach(([ticker, shares]) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${ticker}</td><td>${shares}</td>`;
+        allocBody.appendChild(tr);
+      });
+
+      optResults.style.display = 'block';
+      const rfNote = document.getElementById('optRfNote');
+      if (customStatus) {
+        rfNote.style.display = 'none';
+        optStatus.textContent = customStatus;
+      } else if (data.optimization === 'min_volatility') {
+        rfNote.style.display = 'block';
+        optStatus.textContent = 'Done — Min-Volatility used (returns below RBI Repo 6.5%).';
+      } else {
+        rfNote.style.display = 'none';
+        optStatus.textContent = `Done — Max-Sharpe · RBI Repo 6.5% · ${data.tickers_used ? data.tickers_used.length : ''} stocks used${data.tickers_skipped && data.tickers_skipped.length ? ' · Skipped: ' + data.tickers_skipped.join(', ') : ''}.`;
+      }
+    }
+
+    optSampleBtn.addEventListener('click', () => {
+      optError.style.display = 'none';
+      renderOptimizerResult(
+        SAMPLE_BACKTEST,
+        'Sample Backtest (₹1,00,000 Nifty 50 preview) · Click "Optimize Portfolio" for live NSE data.'
+      );
+    });
 
     // NSE India Index Presets
     const NSE_PRESETS = {
@@ -1749,85 +1908,27 @@
 
       try {
         const params = new URLSearchParams({ tickers, amount, start, end });
-        const res = await fetch(`${MPT_API_URL}?${params.toString()}`);
+        const ctrl = new AbortController();
+        const timeoutId = setTimeout(() => ctrl.abort(), 45000);
+        const res = await fetch(`${MPT_API_URL}?${params.toString()}`, { signal: ctrl.signal });
+        clearTimeout(timeoutId);
         const data = await res.json();
 
         if (!res.ok || data.error) {
           throw new Error(data.error || `Request failed with status ${res.status}`);
         }
 
-        const perf = data.performance || {};
-        document.getElementById('kpiReturn').textContent = perf.expected_annual_return != null ? `${perf.expected_annual_return}%` : '—';
-        document.getElementById('kpiVol').textContent = perf.annual_volatility != null ? `${perf.annual_volatility}%` : '—';
-        document.getElementById('kpiSharpe').textContent = perf.sharpe_ratio != null ? perf.sharpe_ratio : '—';
-        document.getElementById('kpiCash').textContent = data.leftover_cash != null ? `₹${Number(data.leftover_cash).toLocaleString('en-IN')}` : '—';
-
-        const weightsEl = document.getElementById('optWeights');
-        weightsEl.innerHTML = '';
-        const sortedWeights = Object.entries(data.weights || {}).sort((a, b) => b[1] - a[1]);
-        sortedWeights.forEach(([ticker, pct]) => {
-            const row = document.createElement('div');
-            row.className = 'weight-row';
-            row.innerHTML = `
-              <div class="weight-meta"><span>${ticker}</span><span>${pct}%</span></div>
-              <div class="weight-bar-bg"><div class="weight-bar-fill" style="width: ${Math.min(100, Math.max(0, pct))}%"></div></div>
-            `;
-            weightsEl.appendChild(row);
-          });
-
-        // Doughnut pie chart
-        const pieLabels = sortedWeights.map(([t]) => t.replace(/\.NS$/i,''));
-        const pieData   = sortedWeights.map(([, v]) => v);
-        const pieColors = [
-          '#e63946','#2a9d8f','#e9c46a','#264653','#f4a261',
-          '#6a4c93','#1982c4','#8ac926','#ff595e','#6a994e',
-          '#bc6c25','#4cc9f0','#f72585','#7209b7','#3a86ff'
-        ];
-        const pieCtx = document.getElementById('optPieChart').getContext('2d');
-        if (pieChart) pieChart.destroy();
-        pieChart = new Chart(pieCtx, {
-          type: 'doughnut',
-          data: {
-            labels: pieLabels,
-            datasets: [{
-              data: pieData,
-              backgroundColor: pieColors.slice(0, pieLabels.length),
-              borderWidth: 2,
-              borderColor: '#ffffff',
-              hoverOffset: 6
-            }]
-          },
-          options: {
-            responsive: true,
-            cutout: '58%',
-            plugins: {
-              legend: { position: 'bottom', labels: { font: { family: 'Inter, sans-serif', size: 11 }, padding: 10, boxWidth: 12 } },
-              tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` } }
-            }
-          }
-        });
-
-        const allocBody = document.getElementById('optAllocBody');
-        allocBody.innerHTML = '';
-        Object.entries(data.allocation || {}).forEach(([ticker, shares]) => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${ticker}</td><td>${shares}</td>`;
-          allocBody.appendChild(tr);
-        });
-
-        optResults.style.display = 'block';
-        const rfNote = document.getElementById('optRfNote');
-        if (data.optimization === 'min_volatility') {
-          rfNote.style.display = 'block';
-          optStatus.textContent = 'Done — Min-Volatility used (returns below RBI Repo 6.5%).';
-        } else {
-          rfNote.style.display = 'none';
-          optStatus.textContent = `Done — Max-Sharpe · RBI Repo 6.5% · ${data.tickers_used ? data.tickers_used.length : ''} stocks used${data.tickers_skipped && data.tickers_skipped.length ? ' · Skipped: ' + data.tickers_skipped.join(', ') : ''}.`;
-        }
+        renderOptimizerResult(data);
       } catch (err) {
-        optError.textContent = err.message || 'Failed to reach the optimization API.';
+        const reason = err.name === 'AbortError'
+          ? 'Render cold-start timed out (>45s)'
+          : (err.message || 'Live API unavailable');
+        optError.textContent = `${reason} — displaying Sample Backtest preview below.`;
         optError.style.display = 'block';
-        optStatus.textContent = 'Optimization failed.';
+        renderOptimizerResult(
+          SAMPLE_BACKTEST,
+          'Sample Backtest fallback · Click "Optimize Portfolio" to retry live NSE data.'
+        );
       } finally {
         clearInterval(_timer);
         optRunBtn.disabled = false;
