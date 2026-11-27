@@ -1030,30 +1030,66 @@
         color: #333333;
       }
     }
-  /* ----- NEW: side‑by‑side layout ----- */
-.flex-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  margin-top: 2rem;
-}
-.flex-container > section {
-  flex: 1 1 45%;
-  min-width: 300px;
-}
-/* Ensure the news‑feed UI is visible */
-.news-feed {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-#news-start,
-#news-stop {
-  display: inline-block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-</style>
+    /* Side-by-side Optimizer + Live News Feed layout */
+    .flex-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+    .optimizer-pane {
+      flex: 1 1 600px;
+      min-width: 0;
+    }
+    .news-feed-section {
+      flex: 1 1 340px;
+      min-width: 300px;
+    }
+    .news-feed {
+      display: block;
+    }
+    .news-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: end;
+    }
+    .news-controls .opt-field {
+      flex: 1 1 160px;
+    }
+    #news-list {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0 0;
+      max-height: 420px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .news-item {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+    }
+    .news-item a {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.45;
+    }
+    .news-item a:hover {
+      color: var(--teal);
+      text-decoration: underline;
+    }
+    .news-meta {
+      font-size: 12px;
+      color: var(--ink-subtle);
+      margin-top: 4px;
+    }
+  </style>
 </head>
 <body id="top">
 
@@ -1209,74 +1245,13 @@
     </div>
   </section>
 
-  <!-- Live MPT Portfolio Optimizer -->
+  <!-- Live MPT Portfolio Optimizer & Live News Feed (Side-by-Side) -->
   <section id="optimizer" class="optimizer-section">
-  <div class="container">
-    <p class="section-center-title">Live Quant Tool · NSE India</p>
-    <!-- Optimizer UI remains here (existing code below) -->
-  </div>
-</section>
-<!-- New wrapper for side‑by‑side layout -->
-<div class="flex-container">
-  <section id="optimizer" class="optimizer-section">
-    <div class="container">
-      <p class="section-center-title">Live Quant Tool · NSE India</p>
-      <!-- Existing optimizer content (the original optimizer JS etc.) will stay untouched later in the file -->
-    </div>
-  </section>
-  <section id="news-feed-section" class="news-feed-section">
-    <div class="container">
-      <p class="section-center-title">Live News Feed</p>
-      <div class="news-feed">
-        <label for="news-symbol">Ticker (NSE): </label>
-        <input id="news-symbol" type="text" value="RELIANCE.NS" placeholder="e.g. TCS.NS" />
-        <button id="news-start">Start Live News</button>
-        <button id="news-stop" disabled>Stop</button>
-        <ul id="news-list" style="margin-top:1rem; max-height:300px; overflow:auto;"></ul>
-      </div>
-      <script>
-        let eventSource = null;
-        const startBtn = document.getElementById('news-start');
-        const stopBtn = document.getElementById('news-stop');
-        const symbolInput = document.getElementById('news-symbol');
-        const newsList = document.getElementById('news-list');
-        function appendNews(item) {
-          const li = document.createElement('li');
-          li.style.padding = '0.3rem 0';
-          const a = document.createElement('a');
-          a.href = item.link;
-          a.target = '_blank';
-          a.textContent = item.title;
-          li.appendChild(a);
-          newsList.prepend(li);
-        }
-        startBtn.onclick = () => {
-          const symbol = encodeURIComponent(symbolInput.value.trim() || 'RELIANCE.NS');
-          if (eventSource) eventSource.close();
-          eventSource = new EventSource('https://atri-news-app.vercel.app/news-sse?symbol=' + symbol);
-          eventSource.onmessage = (e) => {
-            try { const data = JSON.parse(e.data); appendNews(data); }
-            catch (err) { console.error('bad news payload', err); }
-          };
-          eventSource.onerror = (err) => { console.error('SSE error', err); stop(); };
-          startBtn.disabled = true;
-          stopBtn.disabled = false;
-          newsList.innerHTML = '';
-        };
-        function stop() {
-          if (eventSource) eventSource.close();
-          eventSource = null;
-          startBtn.disabled = false;
-          stopBtn.disabled = true;
-        }
-        stopBtn.onclick = stop;
-      </script>
-    </div>
-  </section>
-</div>
-    <div class="container">
-      <p class="section-center-title">Live Quant Tool · NSE India</p>
-      <h2 class="section-center-sub">Indian Stock Portfolio Optimizer — Nifty 50 (MPT)</h2>
+    <div class="container" style="max-width: 1280px;">
+      <div class="flex-container">
+        <div class="optimizer-pane">
+          <p class="section-center-title">Live Quant Tool · NSE India</p>
+          <h2 class="section-center-sub">Indian Stock Portfolio Optimizer — Nifty 50 (MPT)</h2>
       <div class="optimizer-card">
         <!-- NSE Index Presets -->
         <div class="opt-presets" id="optPresets">
@@ -1358,6 +1333,23 @@
             </div>
           </div>
         </div>
+        </div>
+        <aside id="news-feed-section" class="news-feed-section">
+          <p class="section-center-title">Live Market Stream · NSE India</p>
+          <h2 class="section-center-sub">Live News Feed</h2>
+          <div class="news-feed optimizer-card">
+            <div class="news-controls">
+              <div class="opt-field">
+                <label for="news-symbol">NSE Ticker</label>
+                <input id="news-symbol" type="text" value="RELIANCE.NS" placeholder="e.g. TCS.NS or INFY" />
+              </div>
+              <button type="button" class="btn btn-teal" id="news-start">Start Live News</button>
+              <button type="button" class="btn btn-ghost" id="news-stop" style="color:var(--ink);border-color:#cbd5e1;" disabled>Stop</button>
+            </div>
+            <p class="opt-status" id="news-status" style="margin-top:10px;">Click “Start Live News” to stream headlines from the NSE backend.</p>
+            <ul id="news-list"></ul>
+          </div>
+        </aside>
       </div>
     </div>
   </section>
@@ -1752,118 +1744,94 @@
         optRunBtn.textContent = '⚡ Optimize Portfolio';
       }
     });
-  </script>
-<section id="optimizer" class="optimizer-section">
-  <div class="container">
-    <p class="section-center-title">Live Quant Tool · NSE India</p>
-    <!-- Optimizer UI remains here (existing code below) -->
-  </div>
-</section>
-<!-- New wrapper for side‑by‑side layout -->
-<div class="flex-container">
-  <section id="optimizer" class="optimizer-section">
-    <div class="container">
-      <p class="section-center-title">Live Quant Tool · NSE India</p>
-      <!-- Existing optimizer content (the original optimizer JS etc.) will stay untouched later in the file -->
-    </div>
-  </section>
-  <section id="news-feed-section" class="news-feed-section">
-    <div class="container">
-      <p class="section-center-title">Live News Feed</p>
-      <div class="news-feed">
-        <label for="news-symbol">Ticker (NSE): </label>
-        <input id="news-symbol" type="text" value="RELIANCE.NS" placeholder="e.g. TCS.NS" />
-        <button id="news-start">Start Live News</button>
-        <button id="news-stop" disabled>Stop</button>
-        <ul id="news-list" style="margin-top:1rem; max-height:300px; overflow:auto;"></ul>
-      </div>
-      <script>
-        let eventSource = null;
-        const startBtn = document.getElementById('news-start');
-        const stopBtn = document.getElementById('news-stop');
-        const symbolInput = document.getElementById('news-symbol');
-        const newsList = document.getElementById('news-list');
-        function appendNews(item) {
-          const li = document.createElement('li');
-          li.style.padding = '0.3rem 0';
-          const a = document.createElement('a');
-          a.href = item.link;
-          a.target = '_blank';
-          a.textContent = item.title;
-          li.appendChild(a);
-          newsList.prepend(li);
-        }
-        startBtn.onclick = () => {
-          const symbol = encodeURIComponent(symbolInput.value.trim() || 'RELIANCE.NS');
-          if (eventSource) eventSource.close();
-          eventSource = new EventSource('https://atri-news-app.vercel.app/news-sse?symbol=' + symbol);
-          eventSource.onmessage = (e) => {
-            try { const data = JSON.parse(e.data); appendNews(data); }
-            catch (err) { console.error('bad news payload', err); }
-          };
-          eventSource.onerror = (err) => { console.error('SSE error', err); stop(); };
-          startBtn.disabled = true;
-          stopBtn.disabled = false;
-          newsList.innerHTML = '';
-        };
-        function stop() {
-          if (eventSource) eventSource.close();
-          eventSource = null;
-          startBtn.disabled = false;
-          stopBtn.disabled = true;
-        }
-        stopBtn.onclick = stop;
-      </script>
-    </div>
-  </section>
-</div>
-  <div class="container">
-    <p class="section-center-title">Live Quant Tool · NSE India</p>
-    <div class="news-feed">
-      <label for="news-symbol">Ticker (NSE): </label>
-      <input id="news-symbol" type="text" value="RELIANCE.NS" placeholder="e.g. TCS.NS" />
-      <button id="news-start">Start Live News</button>
-      <button id="news-stop" disabled>Stop</button>
-      <ul id="news-list" style="margin-top:1rem; max-height:300px; overflow:auto;"></ul>
-    </div>
-    <script>
+
+    // Live NSE News Feed (SSE via Vercel Flask backend)
+    (function initLiveNews() {
       let eventSource = null;
+      const seenKeys = new Set();
       const startBtn = document.getElementById('news-start');
-      const stopBtn  = document.getElementById('news-stop');
+      const stopBtn = document.getElementById('news-stop');
       const symbolInput = document.getElementById('news-symbol');
       const newsList = document.getElementById('news-list');
+      const newsStatus = document.getElementById('news-status');
+
       function appendNews(item) {
+        const key = item.id || item.link || item.title;
+        if (!item.title || seenKeys.has(key)) return;
+        seenKeys.add(key);
+
         const li = document.createElement('li');
-        li.style.padding = '0.3rem 0';
+        li.className = 'news-item';
+
         const a = document.createElement('a');
-        a.href = item.link;
+        a.href = item.link || '#';
         a.target = '_blank';
+        a.rel = 'noopener noreferrer';
         a.textContent = item.title;
         li.appendChild(a);
+
+        if (item.publisher || item.pubDate) {
+          const meta = document.createElement('div');
+          meta.className = 'news-meta';
+          const dateText = item.pubDate ? new Date(item.pubDate).toLocaleString('en-IN') : '';
+          meta.textContent = [item.publisher, dateText].filter(Boolean).join(' · ');
+          li.appendChild(meta);
+        }
+
         newsList.prepend(li);
       }
-      startBtn.onclick = () => {
-        const symbol = encodeURIComponent(symbolInput.value.trim() || 'RELIANCE.NS');
-        if (eventSource) eventSource.close();
-        eventSource = new EventSource('https://atri-news-app.vercel.app/news-sse?symbol=' + symbol);
-        eventSource.onmessage = (e) => {
-          try { const data = JSON.parse(e.data); appendNews(data); }
-          catch (err) { console.error('bad news payload', err); }
-        };
-        eventSource.onerror = (err) => { console.error('SSE error', err); stop(); };
-        startBtn.disabled = true;
-        stopBtn.disabled = false;
-        newsList.innerHTML = '';
-      };
-      function stop() {
-        if (eventSource) eventSource.close();
-        eventSource = null;
+
+      function stopStream(statusMsg) {
+        if (eventSource) {
+          eventSource.close();
+          eventSource = null;
+        }
         startBtn.disabled = false;
         stopBtn.disabled = true;
+        if (statusMsg) newsStatus.textContent = statusMsg;
       }
-      stopBtn.onclick = stop;
-    </script>
-  </div>
-</section>
+
+      startBtn.addEventListener('click', () => {
+        const raw = symbolInput.value.trim().toUpperCase() || 'RELIANCE.NS';
+        const symbol = raw.includes('.') || raw.startsWith('^') ? raw : `${raw}.NS`;
+        symbolInput.value = symbol;
+
+        if (eventSource) eventSource.close();
+        seenKeys.clear();
+        newsList.innerHTML = '';
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        newsStatus.textContent = `Connecting to live stream for ${symbol}...`;
+
+        eventSource = new EventSource(
+          'https://atri-news-app.vercel.app/news-sse?symbol=' + encodeURIComponent(symbol)
+        );
+
+        eventSource.onopen = () => {
+          newsStatus.textContent = `Live stream active for ${symbol} (auto-refreshing every 15s)`;
+        };
+
+        eventSource.onmessage = (e) => {
+          try {
+            const data = JSON.parse(e.data);
+            appendNews(data);
+            newsStatus.textContent = `Live stream active for ${symbol} · ${seenKeys.size} headline(s)`;
+          } catch (err) {
+            console.error('Bad news payload', err);
+          }
+        };
+
+        eventSource.onerror = () => {
+          if (eventSource && eventSource.readyState === EventSource.CLOSED) {
+            stopStream('Stream closed by server.');
+          } else {
+            newsStatus.textContent = `Polling ${symbol} every 15s...`;
+          }
+        };
+      });
+
+      stopBtn.addEventListener('click', () => stopStream('Stream stopped.'));
+    })();
+  </script>
 </body>
 </html>
