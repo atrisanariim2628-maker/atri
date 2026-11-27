@@ -1725,7 +1725,13 @@
     // Live MPT Portfolio Optimizer
     const MPT_API_URL = 'https://mpt-saj5.onrender.com/api';
     // Pre-warm Render backend silently on page load to reduce cold-start delay
-    fetch(MPT_API_URL + '?tickers=RELIANCE.NS&amount=1000&start=2024-01-01&end=2024-01-02').catch(() => {});
+    fetch(MPT_API_URL + '?tickers=RELIANCE.NS&amount=1000&start=2024-01-01&end=2024-01-02')
+      .then((res) => {
+        if (res && res.ok && !optRunBtn.disabled && optResults.style.display !== 'block') {
+          optStatus.textContent = 'Backend warm · Ready · Risk-free rate: RBI Repo 6.5%';
+        }
+      })
+      .catch(() => {});
     const mptForm = document.getElementById('mptForm');
     const optRunBtn = document.getElementById('optRunBtn');
     const optSampleBtn = document.getElementById('optSampleBtn');
