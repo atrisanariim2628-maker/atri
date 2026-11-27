@@ -726,6 +726,48 @@
       margin: 0 auto;
     }
 
+    /* NSE preset buttons */
+    .opt-presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .opt-preset-btn {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1.5px solid var(--teal);
+      background: transparent;
+      color: var(--teal);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .opt-preset-btn:hover,
+    .opt-preset-btn.active {
+      background: var(--teal);
+      color: #ffffff;
+    }
+
+    .opt-hint {
+      font-size: 12px;
+      color: var(--ink-subtle);
+      margin-top: 6px;
+    }
+
+    .opt-rf-note {
+      font-size: 12px;
+      color: var(--ink-subtle);
+      margin-top: 10px;
+      display: none;
+    }
+
     .opt-panel {
       background: var(--white);
       border: 1px solid var(--border);
@@ -1147,14 +1189,24 @@
   <!-- Live MPT Portfolio Optimizer -->
   <section id="optimizer" class="optimizer-section">
     <div class="container">
-      <p class="section-center-title">Live Quant Tool</p>
-      <h2 class="section-center-sub">Indian Stock Portfolio Optimizer (MPT)</h2>
+      <p class="section-center-title">Live Quant Tool · NSE India</p>
+      <h2 class="section-center-sub">Indian Stock Portfolio Optimizer — Nifty 50 (MPT)</h2>
       <div class="optimizer-card">
+        <!-- NSE Index Presets -->
+        <div class="opt-presets" id="optPresets">
+          <button type="button" class="opt-preset-btn active" data-preset="nifty50">Nifty 50 Core</button>
+          <button type="button" class="opt-preset-btn" data-preset="niftybank">Nifty Bank</button>
+          <button type="button" class="opt-preset-btn" data-preset="niftyit">Nifty IT</button>
+          <button type="button" class="opt-preset-btn" data-preset="niftyauto">Nifty Auto</button>
+          <button type="button" class="opt-preset-btn" data-preset="niftypharma">Nifty Pharma</button>
+          <button type="button" class="opt-preset-btn" data-preset="custom">Custom NSE</button>
+        </div>
         <form id="mptForm">
           <div class="opt-form-grid">
             <div class="opt-field">
-              <label for="optTickers">NSE Tickers (comma-separated)</label>
+              <label for="optTickers">NSE Tickers (suffix .NS · comma-separated)</label>
               <input id="optTickers" type="text" value="RELIANCE.NS,TCS.NS,HDFCBANK.NS,INFY.NS,ITC.NS,TATAMOTORS.NS" required />
+              <p class="opt-hint">Format: SYMBOL.NS &nbsp;·&nbsp; e.g. RELIANCE.NS, WIPRO.NS, SBIN.NS</p>
             </div>
             <div class="opt-field">
               <label for="optAmount">Capital (₹ INR)</label>
@@ -1170,10 +1222,11 @@
             </div>
           </div>
           <div class="opt-actions">
-            <button type="submit" class="btn btn-teal" id="optRunBtn">Optimize Max-Sharpe Portfolio</button>
-            <button type="button" class="btn btn-ghost" id="optResetBtn" style="color: var(--ink); border-color: #cbd5e1;">Reset Defaults</button>
-            <span class="opt-status" id="optStatus">Powered by Flask + PyPortfolioOpt on Render.</span>
+            <button type="submit" class="btn btn-teal" id="optRunBtn">⚡ Optimize Portfolio</button>
+            <button type="button" class="btn btn-ghost" id="optResetBtn" style="color:var(--ink);border-color:#cbd5e1;">Reset</button>
+            <span class="opt-status" id="optStatus">Risk-free rate: RBI Repo 6.5% · Solver: Max-Sharpe → Min-Vol fallback</span>
           </div>
+          <p class="opt-rf-note" id="optRfNote">⚠️ Switched to Min-Volatility — selected stocks returned below RBI Repo rate (6.5%) in this period.</p>
         </form>
 
         <div class="opt-error" id="optError" role="alert"></div>
@@ -1189,11 +1242,11 @@
               <div class="opt-kpi-val" id="kpiVol">—</div>
             </div>
             <div class="opt-kpi">
-              <div class="opt-kpi-label">Sharpe Ratio</div>
+              <div class="opt-kpi-label">Sharpe Ratio (RBI 6.5%)</div>
               <div class="opt-kpi-val" id="kpiSharpe">—</div>
             </div>
             <div class="opt-kpi">
-              <div class="opt-kpi-label">Leftover Cash</div>
+              <div class="opt-kpi-label">Leftover Cash (₹)</div>
               <div class="opt-kpi-val" id="kpiCash">—</div>
             </div>
           </div>
@@ -1203,10 +1256,10 @@
               <div id="optWeights"></div>
             </div>
             <div class="opt-panel">
-              <h4>Discrete Share Allocation (INR)</h4>
+              <h4>Discrete Share Allocation (₹ INR)</h4>
               <table class="alloc-table">
                 <thead>
-                  <tr><th>Ticker</th><th>Shares</th></tr>
+                  <tr><th>NSE Ticker</th><th>Shares</th></tr>
                 </thead>
                 <tbody id="optAllocBody"></tbody>
               </table>
@@ -1471,17 +1524,42 @@
     const optResults = document.getElementById('optResults');
     let pieChart = null;
 
+    // NSE India Index Presets
+    const NSE_PRESETS = {
+      nifty50:    'RELIANCE.NS,TCS.NS,HDFCBANK.NS,INFY.NS,ITC.NS,TATAMOTORS.NS,WIPRO.NS,AXISBANK.NS,SBIN.NS,BAJFINANCE.NS',
+      niftybank:  'HDFCBANK.NS,ICICIBANK.NS,KOTAKBANK.NS,AXISBANK.NS,SBIN.NS,BANKBARODA.NS,INDUSINDBK.NS,FEDERALBNK.NS',
+      niftyit:    'TCS.NS,INFY.NS,WIPRO.NS,HCLTECH.NS,TECHM.NS,MPHASIS.NS,LTIM.NS,COFORGE.NS',
+      niftyauto:  'TATAMOTORS.NS,MARUTI.NS,M&M.NS,BAJAJ-AUTO.NS,EICHERMOT.NS,HEROMOTOCO.NS,TVSMOTOR.NS',
+      niftypharma:'SUNPHARMA.NS,DRREDDY.NS,CIPLA.NS,DIVISLAB.NS,AUROPHARMA.NS,LUPIN.NS,ALKEM.NS',
+      custom:     '',
+    };
+    const DEFAULT_PRESET = 'nifty50';
+
+    document.querySelectorAll('.opt-preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.opt-preset-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const key = btn.dataset.preset;
+        if (key !== 'custom') {
+          document.getElementById('optTickers').value = NSE_PRESETS[key];
+        }
+        document.getElementById('optTickers').focus();
+      });
+    });
+
     const PIE_COLORS = [
       '#0f766e','#14b8a6','#5eead4','#115e59','#99f6e4',
       '#0d9488','#2dd4bf','#047857','#34d399','#6ee7b7'
     ];
 
     optResetBtn.addEventListener('click', () => {
-      document.getElementById('optTickers').value = 'RELIANCE.NS,TCS.NS,HDFCBANK.NS,INFY.NS,ITC.NS,TATAMOTORS.NS';
+      document.getElementById('optTickers').value = NSE_PRESETS[DEFAULT_PRESET];
       document.getElementById('optAmount').value = '100000';
       document.getElementById('optStart').value = '2023-01-01';
       document.getElementById('optEnd').value = '2026-01-01';
       optError.style.display = 'none';
+      document.getElementById('optRfNote').style.display = 'none';
+      document.querySelectorAll('.opt-preset-btn').forEach(b => b.classList.toggle('active', b.dataset.preset === DEFAULT_PRESET));
     });
 
     mptForm.addEventListener('submit', async (e) => {
@@ -1493,8 +1571,9 @@
 
       optError.style.display = 'none';
       optRunBtn.disabled = true;
-      optRunBtn.textContent = 'Optimizing...';
-      optStatus.textContent = 'Fetching NSE data & solving Max-Sharpe (first call on Render free tier may take ~30–60s)...';
+      optRunBtn.textContent = '⏳ Optimizing…';
+      optStatus.textContent = 'Fetching NSE data & solving (first call on Render free tier may take ~30–60s)…';
+      document.getElementById('optRfNote').style.display = 'none';
 
       try {
         const params = new URLSearchParams({ tickers, amount, start, end });
@@ -1561,14 +1640,21 @@
         });
 
         optResults.style.display = 'block';
-        optStatus.textContent = `Optimization complete — ${data.optimization === 'min_volatility' ? 'Min-Volatility (fallback: returns below risk-free rate)' : 'Max-Sharpe'}.`;
+        const rfNote = document.getElementById('optRfNote');
+        if (data.optimization === 'min_volatility') {
+          rfNote.style.display = 'block';
+          optStatus.textContent = 'Done — Min-Volatility used (returns below RBI Repo 6.5%).';
+        } else {
+          rfNote.style.display = 'none';
+          optStatus.textContent = `Done — Max-Sharpe · RBI Repo 6.5% · ${data.tickers_used ? data.tickers_used.length : ''} stocks used${data.tickers_skipped && data.tickers_skipped.length ? ' · Skipped: ' + data.tickers_skipped.join(', ') : ''}.`;
+        }
       } catch (err) {
         optError.textContent = err.message || 'Failed to reach the optimization API.';
         optError.style.display = 'block';
         optStatus.textContent = 'Optimization failed.';
       } finally {
         optRunBtn.disabled = false;
-        optRunBtn.textContent = 'Optimize Max-Sharpe Portfolio';
+        optRunBtn.textContent = '⚡ Optimize Portfolio';
       }
     });
   </script>
