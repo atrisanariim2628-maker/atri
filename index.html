@@ -1030,7 +1030,30 @@
         color: #333333;
       }
     }
-  </style>
+  /* ----- NEW: side‑by‑side layout ----- */
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+.flex-container > section {
+  flex: 1 1 45%;
+  min-width: 300px;
+}
+/* Ensure the news‑feed UI is visible */
+.news-feed {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#news-start,
+#news-stop {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+</style>
 </head>
 <body id="top">
 
@@ -1188,6 +1211,69 @@
 
   <!-- Live MPT Portfolio Optimizer -->
   <section id="optimizer" class="optimizer-section">
+  <div class="container">
+    <p class="section-center-title">Live Quant Tool · NSE India</p>
+    <!-- Optimizer UI remains here (existing code below) -->
+  </div>
+</section>
+<!-- New wrapper for side‑by‑side layout -->
+<div class="flex-container">
+  <section id="optimizer" class="optimizer-section">
+    <div class="container">
+      <p class="section-center-title">Live Quant Tool · NSE India</p>
+      <!-- Existing optimizer content (the original optimizer JS etc.) will stay untouched later in the file -->
+    </div>
+  </section>
+  <section id="news-feed-section" class="news-feed-section">
+    <div class="container">
+      <p class="section-center-title">Live News Feed</p>
+      <div class="news-feed">
+        <label for="news-symbol">Ticker (NSE): </label>
+        <input id="news-symbol" type="text" value="RELIANCE.NS" placeholder="e.g. TCS.NS" />
+        <button id="news-start">Start Live News</button>
+        <button id="news-stop" disabled>Stop</button>
+        <ul id="news-list" style="margin-top:1rem; max-height:300px; overflow:auto;"></ul>
+      </div>
+      <script>
+        let eventSource = null;
+        const startBtn = document.getElementById('news-start');
+        const stopBtn = document.getElementById('news-stop');
+        const symbolInput = document.getElementById('news-symbol');
+        const newsList = document.getElementById('news-list');
+        function appendNews(item) {
+          const li = document.createElement('li');
+          li.style.padding = '0.3rem 0';
+          const a = document.createElement('a');
+          a.href = item.link;
+          a.target = '_blank';
+          a.textContent = item.title;
+          li.appendChild(a);
+          newsList.prepend(li);
+        }
+        startBtn.onclick = () => {
+          const symbol = encodeURIComponent(symbolInput.value.trim() || 'RELIANCE.NS');
+          if (eventSource) eventSource.close();
+          eventSource = new EventSource('https://atri-news-app.vercel.app/news-sse?symbol=' + symbol);
+          eventSource.onmessage = (e) => {
+            try { const data = JSON.parse(e.data); appendNews(data); }
+            catch (err) { console.error('bad news payload', err); }
+          };
+          eventSource.onerror = (err) => { console.error('SSE error', err); stop(); };
+          startBtn.disabled = true;
+          stopBtn.disabled = false;
+          newsList.innerHTML = '';
+        };
+        function stop() {
+          if (eventSource) eventSource.close();
+          eventSource = null;
+          startBtn.disabled = false;
+          stopBtn.disabled = true;
+        }
+        stopBtn.onclick = stop;
+      </script>
+    </div>
+  </section>
+</div>
     <div class="container">
       <p class="section-center-title">Live Quant Tool · NSE India</p>
       <h2 class="section-center-sub">Indian Stock Portfolio Optimizer — Nifty 50 (MPT)</h2>
@@ -1668,6 +1754,69 @@
     });
   </script>
 <section id="optimizer" class="optimizer-section">
+  <div class="container">
+    <p class="section-center-title">Live Quant Tool · NSE India</p>
+    <!-- Optimizer UI remains here (existing code below) -->
+  </div>
+</section>
+<!-- New wrapper for side‑by‑side layout -->
+<div class="flex-container">
+  <section id="optimizer" class="optimizer-section">
+    <div class="container">
+      <p class="section-center-title">Live Quant Tool · NSE India</p>
+      <!-- Existing optimizer content (the original optimizer JS etc.) will stay untouched later in the file -->
+    </div>
+  </section>
+  <section id="news-feed-section" class="news-feed-section">
+    <div class="container">
+      <p class="section-center-title">Live News Feed</p>
+      <div class="news-feed">
+        <label for="news-symbol">Ticker (NSE): </label>
+        <input id="news-symbol" type="text" value="RELIANCE.NS" placeholder="e.g. TCS.NS" />
+        <button id="news-start">Start Live News</button>
+        <button id="news-stop" disabled>Stop</button>
+        <ul id="news-list" style="margin-top:1rem; max-height:300px; overflow:auto;"></ul>
+      </div>
+      <script>
+        let eventSource = null;
+        const startBtn = document.getElementById('news-start');
+        const stopBtn = document.getElementById('news-stop');
+        const symbolInput = document.getElementById('news-symbol');
+        const newsList = document.getElementById('news-list');
+        function appendNews(item) {
+          const li = document.createElement('li');
+          li.style.padding = '0.3rem 0';
+          const a = document.createElement('a');
+          a.href = item.link;
+          a.target = '_blank';
+          a.textContent = item.title;
+          li.appendChild(a);
+          newsList.prepend(li);
+        }
+        startBtn.onclick = () => {
+          const symbol = encodeURIComponent(symbolInput.value.trim() || 'RELIANCE.NS');
+          if (eventSource) eventSource.close();
+          eventSource = new EventSource('https://atri-news-app.vercel.app/news-sse?symbol=' + symbol);
+          eventSource.onmessage = (e) => {
+            try { const data = JSON.parse(e.data); appendNews(data); }
+            catch (err) { console.error('bad news payload', err); }
+          };
+          eventSource.onerror = (err) => { console.error('SSE error', err); stop(); };
+          startBtn.disabled = true;
+          stopBtn.disabled = false;
+          newsList.innerHTML = '';
+        };
+        function stop() {
+          if (eventSource) eventSource.close();
+          eventSource = null;
+          startBtn.disabled = false;
+          stopBtn.disabled = true;
+        }
+        stopBtn.onclick = stop;
+      </script>
+    </div>
+  </section>
+</div>
   <div class="container">
     <p class="section-center-title">Live Quant Tool · NSE India</p>
     <div class="news-feed">
