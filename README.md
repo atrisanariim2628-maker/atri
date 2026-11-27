@@ -4,9 +4,9 @@ A static GitHub Pages portfolio adapted from the supplied HTML. It includes the 
 
 ## Deploy to GitHub Pages
 
-The repository is `atrisanariim2628-maker/atri-sana-quant-finance-portfolio`. Its GitHub Actions workflow deploys the repository root to GitHub Pages whenever `main` is updated.
+The repository is `atrisanariim2628-maker/atri`. Its GitHub Actions workflow deploys the repository root to GitHub Pages whenever `main` is updated.
 
-The expected site URL is `https://atrisanariim2628-maker.github.io/atri-sana-quant-finance-portfolio/` after the first successful deployment.
+The site is live at <https://atrisanariim2628-maker.github.io/atri/>.
 
 ## Local preview
 
