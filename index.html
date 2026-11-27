@@ -1610,7 +1610,7 @@
     // Scrollspy — update active nav link as user scrolls
     (function initScrollspy() {
       const navLinks = document.querySelectorAll('.nav-inner a, .mobile-menu a');
-      const sections = Array.from(document.querySelectorAll('section[id], header[id], div[id]'))
+      const sections = Array.from(document.querySelectorAll('body[id], section[id], header[id], div[id], footer[id]'))
         .filter(el => document.querySelector(`.nav-inner a[href="#${el.id}"]`));
 
       function getActive() {
