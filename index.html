@@ -1048,34 +1048,77 @@
     .news-feed {
       display: block;
     }
-    .news-controls {
+    .news-feed-header {
       display: flex;
-      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
       gap: 10px;
-      align-items: end;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #cce3e0;
     }
-    .news-controls .opt-field {
-      flex: 1 1 160px;
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #b91c1c;
+      background: #fee2e2;
+      padding: 4px 10px;
+      border-radius: 999px;
     }
-    #news-list {
-      list-style: none;
-      padding: 0;
-      margin: 16px 0 0;
-      max-height: 420px;
-      overflow-y: auto;
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #dc2626;
+      animation: livePulse 1.4s ease-in-out infinite;
+    }
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.8); }
+    }
+    .news-viewport {
+      position: relative;
+      height: 430px;
+      overflow: hidden;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%);
+      mask-image: linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%);
+    }
+    .news-track {
       display: flex;
       flex-direction: column;
       gap: 10px;
+      padding: 8px 0;
+      will-change: transform;
+      animation: newsCrawl var(--news-duration, 55s) linear infinite;
+    }
+    .news-viewport:hover .news-track,
+    .news-viewport.paused .news-track {
+      animation-play-state: paused;
+    }
+    @keyframes newsCrawl {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-50%); }
     }
     .news-item {
       background: var(--white);
       border: 1px solid var(--border);
+      border-left: 3px solid var(--teal);
       border-radius: 6px;
-      padding: 10px 12px;
+      padding: 11px 13px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .news-item:hover {
+      border-color: var(--teal);
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.08);
     }
     .news-item a {
       display: block;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 600;
       color: var(--ink);
       line-height: 1.45;
@@ -1085,9 +1128,16 @@
       text-decoration: underline;
     }
     .news-meta {
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--ink-subtle);
-      margin-top: 4px;
+      margin-top: 5px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .news-ticker-tag {
+      font-weight: 700;
+      color: var(--teal);
     }
   </style>
 </head>
@@ -1336,19 +1386,17 @@
         </div>
         </div>
         <aside id="news-feed-section" class="news-feed-section">
-          <p class="section-center-title">Live Market Stream · NSE India</p>
+          <p class="section-center-title">Live Market Wire · NSE / BSE</p>
           <h2 class="section-center-sub">Live News Feed</h2>
           <div class="news-feed optimizer-card">
-            <div class="news-controls">
-              <div class="opt-field">
-                <label for="news-symbol">NSE Ticker</label>
-                <input id="news-symbol" type="text" value="RELIANCE.NS" placeholder="e.g. TCS.NS or INFY" />
-              </div>
-              <button type="button" class="btn btn-teal" id="news-start">Start Live News</button>
-              <button type="button" class="btn btn-ghost" id="news-stop" style="color:var(--ink);border-color:#cbd5e1;" disabled>Stop</button>
+            <div class="news-feed-header">
+              <span class="live-badge"><span class="live-dot"></span> LIVE WIRE</span>
+              <button type="button" class="btn btn-ghost" id="news-toggle" style="padding:6px 12px;font-size:11px;color:var(--ink);border-color:#cbd5e1;">Pause</button>
             </div>
-            <p class="opt-status" id="news-status" style="margin-top:10px;">Click “Start Live News” to stream headlines from the NSE backend.</p>
-            <ul id="news-list"></ul>
+            <p class="opt-status" id="news-status" style="margin:0 0 8px;">Connecting to live Indian market headlines… (hover to pause)</p>
+            <div class="news-viewport" id="news-viewport">
+              <div class="news-track" id="news-list"></div>
+            </div>
           </div>
         </aside>
       </div>
@@ -1746,92 +1794,90 @@
       }
     });
 
-    // Live NSE News Feed (SSE via Vercel Flask backend)
-    (function initLiveNews() {
-      let eventSource = null;
+    // Auto-starting Slow-Mo Live Market News Channel (SSE via Vercel Flask backend)
+    (function initLiveNewsChannel() {
+      const items = [];
       const seenKeys = new Set();
-      const startBtn = document.getElementById('news-start');
-      const stopBtn = document.getElementById('news-stop');
-      const symbolInput = document.getElementById('news-symbol');
-      const newsList = document.getElementById('news-list');
-      const newsStatus = document.getElementById('news-status');
+      const viewport = document.getElementById('news-viewport');
+      const track = document.getElementById('news-list');
+      const statusEl = document.getElementById('news-status');
+      const toggleBtn = document.getElementById('news-toggle');
+      let isPaused = false;
 
-      function appendNews(item) {
-        const key = item.id || item.link || item.title;
-        if (!item.title || seenKeys.has(key)) return;
-        seenKeys.add(key);
-
-        const li = document.createElement('li');
-        li.className = 'news-item';
+      function createCard(item) {
+        const card = document.createElement('article');
+        card.className = 'news-item';
 
         const a = document.createElement('a');
         a.href = item.link || '#';
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
         a.textContent = item.title;
-        li.appendChild(a);
+        card.appendChild(a);
 
-        if (item.publisher || item.pubDate) {
-          const meta = document.createElement('div');
-          meta.className = 'news-meta';
-          const dateText = item.pubDate ? new Date(item.pubDate).toLocaleString('en-IN') : '';
-          meta.textContent = [item.publisher, dateText].filter(Boolean).join(' · ');
-          li.appendChild(meta);
-        }
+        const meta = document.createElement('div');
+        meta.className = 'news-meta';
+        const left = document.createElement('span');
+        left.className = 'news-ticker-tag';
+        left.textContent = item.publisher || 'Market Wire';
+        const right = document.createElement('span');
+        right.textContent = item.pubDate
+          ? new Date(item.pubDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+          : 'LIVE';
+        meta.appendChild(left);
+        meta.appendChild(right);
+        card.appendChild(meta);
 
-        newsList.prepend(li);
+        return card;
       }
 
-      function stopStream(statusMsg) {
-        if (eventSource) {
-          eventSource.close();
-          eventSource = null;
-        }
-        startBtn.disabled = false;
-        stopBtn.disabled = true;
-        if (statusMsg) newsStatus.textContent = statusMsg;
+      function renderTrack() {
+        if (!items.length) return;
+        track.innerHTML = '';
+        // Duplicate list once for seamless infinite slow-mo scroll
+        const loopList = items.length > 2 ? [...items, ...items] : items;
+        loopList.forEach((item) => track.appendChild(createCard(item)));
+        const durationSec = Math.max(35, items.length * 4.5);
+        track.style.setProperty('--news-duration', `${durationSec}s`);
       }
 
-      startBtn.addEventListener('click', () => {
-        const raw = symbolInput.value.trim().toUpperCase() || 'RELIANCE.NS';
-        const symbol = raw.includes('.') || raw.startsWith('^') ? raw : `${raw}.NS`;
-        symbolInput.value = symbol;
-
-        if (eventSource) eventSource.close();
-        seenKeys.clear();
-        newsList.innerHTML = '';
-        startBtn.disabled = true;
-        stopBtn.disabled = false;
-        newsStatus.textContent = `Connecting to live stream for ${symbol}...`;
-
-        eventSource = new EventSource(
-          'https://atri-news-app.vercel.app/news-sse?symbol=' + encodeURIComponent(symbol)
-        );
-
-        eventSource.onopen = () => {
-          newsStatus.textContent = `Live stream active for ${symbol} (auto-refreshing every 15s)`;
-        };
-
-        eventSource.onmessage = (e) => {
-          try {
-            const data = JSON.parse(e.data);
-            appendNews(data);
-            newsStatus.textContent = `Live stream active for ${symbol} · ${seenKeys.size} headline(s)`;
-          } catch (err) {
-            console.error('Bad news payload', err);
-          }
-        };
-
-        eventSource.onerror = () => {
-          if (eventSource && eventSource.readyState === EventSource.CLOSED) {
-            stopStream('Stream closed by server.');
-          } else {
-            newsStatus.textContent = `Polling ${symbol} every 15s...`;
-          }
-        };
+      toggleBtn.addEventListener('click', () => {
+        isPaused = !isPaused;
+        viewport.classList.toggle('paused', isPaused);
+        toggleBtn.textContent = isPaused ? 'Resume' : 'Pause';
       });
 
-      stopBtn.addEventListener('click', () => stopStream('Stream stopped.'));
+      let renderTimer = null;
+      const source = new EventSource('https://atri-news-app.vercel.app/news-sse?symbol=MARKET');
+
+      source.onopen = () => {
+        statusEl.textContent = 'Live Indian market wire active · hover any headline to pause';
+      };
+
+      source.onmessage = (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          const key = (data.title || '').trim().toLowerCase();
+          if (!key || seenKeys.has(key)) return;
+          seenKeys.add(key);
+          items.unshift(data);
+          if (items.length > 25) items.pop();
+
+          clearTimeout(renderTimer);
+          renderTimer = setTimeout(() => {
+            renderTrack();
+            statusEl.textContent = `Live wire · ${items.length} headlines (hover to pause)`;
+          }, 150);
+        } catch (err) {
+          console.error('Bad news payload', err);
+        }
+      };
+
+      source.onerror = () => {
+        if (items.length) {
+          statusEl.textContent = `Live wire · ${items.length} headlines · auto-updating (hover to pause)`;
+        }
+      };
     })();
   </script>
 </body>
