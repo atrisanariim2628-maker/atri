@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atri Sana — Corporate CV &amp; Quant Finance Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --teal: #0f766e;
+      --teal-bright: #14b8a6;
+      --teal-light: #5eead4;
+      --teal-tint: #f0f7f6;
+      --dark-hero: #091e20;
+      --dark-about: #112628;
+      --dark-footer: #0b1718;
+      --white: #ffffff;
+      --ink: #1e293b;
+      --ink-muted: #475569;
+      --ink-subtle: #64748b;
+      --border: #e2e8f0;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-serif: 'IBM Plex Serif', Georgia, serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--ink);
+      background: var(--white);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Ceevee Top Centered Navigation */
+    .top-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: rgba(9, 30, 32, 0.88);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 56px;
+      gap: 32px;
+    }
+
+    .nav-inner a {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #cbd5e1;
+      transition: color 0.15s ease;
+    }
+
+    .nav-inner a:hover,
+    .nav-inner a.active {
+      color: var(--teal-light);
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: var(--dark-hero);
+      padding: 12px 24px 18px;
+      gap: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .mobile-menu.open {
+      display: flex;
+    }
+
+    .mobile-menu a {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #e2e8f0;
+    }
+
+    /* Ceevee Fullscreen Hero */
+    .hero {
+      min-height: 88vh;
+      background: radial-gradient(circle at 70% 25%, rgba(20, 184, 166, 0.18), transparent 55%),
+                  linear-gradient(160deg, #071719 0%, #0d2b2e 55%, #091e20 100%);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 110px 24px 72px;
+      position: relative;
+    }
+
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+      margin: 0 0 18px;
+    }
+
+    .hero-h1 {
+      font-size: clamp(2.6rem, 6vw, 4.4rem);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.08;
+      margin: 0 0 22px;
+    }
+
+    .hero-sub {
+      font-family: var(--font-serif);
+      font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+      color: #cbd5e1;
+      max-width: 680px;
+      margin: 0 auto 32px;
+      font-weight: 400;
+      line-height: 1.7;
+    }
+
+    .hero-sub strong {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 40px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 1px solid transparent;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+
+    .btn-teal {
+      background: var(--teal-bright);
+      color: #052224;
+    }
+
+    .btn-teal:hover {
+      background: var(--teal-light);
+    }
+
+    .btn-ghost {
+      border-color: rgba(255, 255, 255, 0.35);
+      color: #ffffff;
+      background: transparent;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--teal-light);
+      color: var(--teal-light);
+    }
+
+    .scroll-down {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      font-size: 16px;
+      transition: all 0.15s ease;
+    }
+
+    .scroll-down:hover {
+      background: var(--teal-bright);
+      color: #052224;
+      border-color: var(--teal-bright);
+    }
+
+    /* About Section (Ceevee Dark Band) */
+    .about-section {
+      background: var(--dark-about);
+      color: #e2e8f0;
+      padding: 84px 0;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .avatar-circle {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), var(--teal-bright));
+      color: #ffffff;
+      font-family: var(--font-serif);
+      font-size: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 4px solid rgba(94, 234, 212, 0.25);
+      margin: 0 auto;
+    }
+
+    .about-h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0 0 14px;
+    }
+
+    .about-text {
+      color: #cbd5e1;
+      margin: 0 0 32px;
+      font-size: 15.5px;
+    }
+
+    .contact-split {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: center;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .contact-details h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0 0 8px;
+    }
+
+    .contact-details p {
+      margin: 0;
+      font-size: 14.5px;
+      color: #94a3b8;
+      line-height: 1.75;
+    }
+
+    .contact-details a {
+      color: var(--teal-light);
+    }
+
+    /* Resume Section (Ceevee Signature 1/4 Left Label + 3/4 Content) */
+    .resume-section {
+      background: var(--white);
+      padding: 88px 0;
+    }
+
+    .resume-block {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 40px;
+      padding-bottom: 48px;
+      margin-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .resume-block:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .resume-label h2 {
+      display: inline-block;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink);
+      margin: 0;
+      padding-bottom: 8px;
+      border-bottom: 3px solid var(--teal);
+    }
+
+    .resume-item {
+      margin-bottom: 32px;
+    }
+
+    .resume-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .resume-item h3 {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0 0 6px;
+      color: var(--ink);
+    }
+
+    .resume-meta {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 15.5px;
+      color: var(--teal);
+      margin: 0 0 12px;
+    }
+
+    .resume-desc {
+      font-size: 15px;
+      color: var(--ink-muted);
+      margin: 0;
+    }
+
+    .skills-columns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .skill-group h4 {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--teal);
+      margin: 0 0 10px;
+    }
+
+    .skill-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 14.5px;
+      color: var(--ink-muted);
+    }
+
+    .skill-list li {
+      padding: 4px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .skill-list li:last-child {
+      border-bottom: none;
+    }
+
+    /* Works Section (Balanced 3x2 Grid) */
+    .works-section {
+      background: var(--teal-tint);
+      padding: 88px 0;
+    }
+
+    .section-center-title {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin: 0 0 10px;
+    }
+
+    .section-center-sub {
+      text-align: center;
+      font-family: var(--font-serif);
+      font-size: 28px;
+      margin: 0 0 44px;
+      color: var(--ink);
+    }
+
+    .works-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .work-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      padding: 0;
+      text-align: left;
+      font-family: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .work-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--teal);
+      box-shadow: 0 14px 28px rgba(15, 118, 110, 0.1);
+    }
+
+    .work-thumb {
+      aspect-ratio: 16 / 10;
+      background: #e6f2f0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .work-thumb svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .work-body {
+      padding: 18px 20px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .work-cat {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 6px;
+    }
+
+    .work-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin: 0 0 8px;
+      color: var(--ink);
+    }
+
+    .work-summary {
+      font-size: 13.5px;
+      color: var(--ink-muted);
+      margin: 0;
+      flex: 1;
+    }
+
+    /* Milestones Band */
+    .milestones-section {
+      background: linear-gradient(135deg, #0b2f31 0%, #114b4e 100%);
+      color: #ffffff;
+      padding: 76px 0;
+      text-align: center;
+    }
+
+    .quote-mark {
+      font-family: var(--font-serif);
+      font-size: 48px;
+      color: var(--teal-light);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .milestone-slide {
+      display: none;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .milestone-slide.active {
+      display: block;
+    }
+
+    .milestone-quote {
+      font-family: var(--font-serif);
+      font-size: clamp(1.25rem, 2.4vw, 1.65rem);
+      line-height: 1.55;
+      margin: 0 0 16px;
+    }
+
+    .milestone-cite {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+      margin: 0;
+    }
+
+    .slider-dots {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .dot.active {
+      background: var(--teal-light);
+      width: 24px;
+      border-radius: 999px;
+    }
+
+    /* Footer / Contact */
+    .footer {
+      background: var(--dark-footer);
+      color: #cbd5e1;
+      padding: 72px 0 40px;
+      text-align: center;
+    }
+
+    .footer-h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0 0 10px;
+    }
+
+    .footer-sub {
+      color: #94a3b8;
+      max-width: 520px;
+      margin: 0 auto 28px;
+      font-size: 15px;
+    }
+
+    .footer-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 44px;
+    }
+
+    .footer-bottom {
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 13px;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 30, 32, 0.78);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-dialog {
+      background: var(--white);
+      border-radius: 8px;
+      max-width: 640px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.95);
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .modal-visual {
+      aspect-ratio: 16 / 9;
+      background: var(--teal-tint);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-visual svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .modal-content {
+      padding: 26px 30px 30px;
+    }
+
+    .modal-title {
+      font-size: 23px;
+      font-weight: 700;
+      margin: 0 0 10px;
+    }
+
+    .modal-desc {
+      font-size: 15px;
+      color: var(--ink-muted);
+      margin: 0 0 14px;
+    }
+
+    .modal-bullets {
+      margin: 0 0 18px;
+      padding-left: 18px;
+      font-size: 14.5px;
+      color: var(--ink-muted);
+    }
+
+    .modal-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 18px;
+    }
+
+    .pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--teal-tint);
+      border: 1px solid var(--border);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--teal);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--teal);
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 13.5px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 120;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    @media (max-width: 900px) {
+      .works-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .about-grid,
+      .resume-block {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .skills-columns {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav-inner {
+        justify-content: space-between;
+      }
+      .nav-inner a {
+        display: none;
+      }
+      .mobile-toggle {
+        display: inline-block;
+      }
+      .works-grid {
+        grid-template-columns: 1fr;
+      }
+      .contact-split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      .top-nav, .scroll-down, .hero-actions, .milestones-section, .footer-actions, .modal-backdrop {
+        display: none !important;
+      }
+      .hero {
+        min-height: auto;
+        padding: 24px 0;
+        background: #ffffff;
+        color: #000000;
+      }
+      .hero-sub {
+        color: #333333;
+      }
+      .about-section {
+        background: #ffffff;
+        color: #000000;
+        padding: 24px 0;
+      }
+      .about-text, .contact-details p {
+        color: #333333;
+      }
+    }
+  </style>
+</head>
+<body id="top">
+
+  <!-- Centered Top Nav -->
+  <header class="top-nav">
+    <div class="container nav-inner">
+      <a href="#top" class="active">Home</a>
+      <a href="#about">About</a>
+      <a href="#resume">Resume</a>
+      <a href="#works">Works</a>
+      <a href="#milestones">Milestones</a>
+      <a href="#contact">Contact</a>
+      <button type="button" class="mobile-toggle" id="mobileToggle" aria-expanded="false">Menu</button>
+    </div>
+    <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile navigation">
+      <a href="#top">Home</a>
+      <a href="#about">About</a>
+      <a href="#resume">Resume</a>
+      <a href="#works">Works</a>
+      <a href="#milestones">Milestones</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <p class="hero-eyebrow">Finance · Quant Research · Entrepreneurship</p>
+    <h1 class="hero-h1">I'm Atri Sana.</h1>
+    <p class="hero-sub">
+      I'm a <strong>PGDM Finance</strong> candidate at <strong>RIIM Pune</strong> combining <strong>Modern Portfolio Theory in Python</strong>, daily NSE/BSE equity research, and E-Cell leadership—seeking Finance, Quant Research, and Fintech internships.
+    </p>
+    <div class="hero-actions">
+      <a href="#resume" class="btn btn-teal">View Corporate CV</a>
+      <a href="#works" class="btn btn-ghost">Selected Works</a>
+    </div>
+    <a href="#about" class="scroll-down" aria-label="Scroll to About">&#8595;</a>
+  </section>
+
+  <!-- About (Ceevee Dark Band) -->
+  <section id="about" class="about-section">
+    <div class="container about-grid">
+      <div>
+        <div class="avatar-circle" aria-label="Atri Sana monogram">AS</div>
+      </div>
+      <div>
+        <h2 class="about-h2">About Me</h2>
+        <p class="about-text">
+          Pursuing a PGDM in Finance (2026–2028) at Ramachandran International Institute of Management (RIIM), Bavdhan, Pune. I build quantitative portfolio optimization tools in Python, publish automated NSE/BSE equity briefings, and serve as Co-Editor-In-Chief &amp; Design Lead for Team RIIM Innovisionaries in the National Entrepreneurship Challenge 2026 (E-Cell, IIT Bombay).
+        </p>
+
+        <div class="contact-split">
+          <div class="contact-details">
+            <h3>Contact Details</h3>
+            <p>
+              Atri Sana<br />
+              Pune, Maharashtra, India<br />
+              <a href="mailto:atrisana.riim2628@gmail.com">atrisana.riim2628@gmail.com</a> &middot; +91 94775 49451
+            </p>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-teal" id="printCvBtn">Print / Save CV</button>
+            <button type="button" class="btn btn-ghost" id="copyEmailBtn">Copy Email</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Resume (Ceevee 1/4 + 3/4 Corporate Layout) -->
+  <section id="resume" class="resume-section">
+    <div class="container">
+      <!-- Education -->
+      <div class="resume-block">
+        <div class="resume-label">
+          <h2>Education</h2>
+        </div>
+        <div>
+          <div class="resume-item">
+            <h3>Ramachandran International Institute of Management (RIIM), Pune</h3>
+            <p class="resume-meta">PGDM in Finance &middot; 2026 – 2028</p>
+            <p class="resume-desc">
+              Specializing in Financial Management, Equity Markets, and Quantitative Portfolio Analysis, complemented by Python modeling workflows and active membership in the RIIM Startup &amp; Innovation Cell.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leadership & Experience -->
+      <div class="resume-block">
+        <div class="resume-label">
+          <h2>Leadership</h2>
+        </div>
+        <div>
+          <div class="resume-item">
+            <h3>E-Cell RIIM Pune — Team RIIM Innovisionaries</h3>
+            <p class="resume-meta">Co-Editor-In-Chief &amp; Design Lead (NEC2620041) &middot; Jul – Oct 2026</p>
+            <p class="resume-desc">
+              Compiled and designed the NEC 2026 Annual Report for E-Cell, IIT Bombay, contributing to 11 completed NEC tasks (1,260 / 1,170 points, 108% as reported). Supported RIIMAGINE Pitch Arena 2026 and authored/edited 18 LinkedIn articles in <em>“The Startup Files”</em>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Capabilities -->
+      <div class="resume-block">
+        <div class="resume-label">
+          <h2>Capabilities</h2>
+        </div>
+        <div class="skills-columns">
+          <div class="skill-group">
+            <h4>Finance &amp; Markets</h4>
+            <ul class="skill-list">
+              <li>Modern Portfolio Theory</li>
+              <li>Sharpe Ratio Optimization</li>
+              <li>NSE / BSE Equity Analysis</li>
+              <li>FII / DII Flow Tracking</li>
+              <li>Digital Lending &amp; Fintech</li>
+            </ul>
+          </div>
+          <div class="skill-group">
+            <h4>Python &amp; Data</h4>
+            <ul class="skill-list">
+              <li>Python &amp; Streamlit</li>
+              <li>PyPortfolioOpt</li>
+              <li>yfinance</li>
+              <li>pandas &amp; NumPy</li>
+              <li>Matplotlib</li>
+            </ul>
+          </div>
+          <div class="skill-group">
+            <h4>Research &amp; Planning</h4>
+            <ul class="skill-list">
+              <li>Equity Research</li>
+              <li>Financial Modeling (INR)</li>
+              <li>Market Sizing</li>
+              <li>Event Budgeting</li>
+              <li>Editorial Design</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Selected Works (Balanced 3x2 Grid) -->
+  <section id="works" class="works-section">
+    <div class="container">
+      <p class="section-center-title">Selected Works</p>
+      <h2 class="section-center-sub">Check out some of my research &amp; builds.</h2>
+      <div class="works-grid" id="worksGrid"></div>
+    </div>
+  </section>
+
+  <!-- Milestones Quote Slider -->
+  <section id="milestones" class="milestones-section">
+    <div class="container">
+      <div class="quote-mark" aria-hidden="true">&ldquo;</div>
+      <div class="milestone-slide active">
+        <p class="milestone-quote">Delivered 1,260 / 1,170 points (108% as reported) across 11 National Entrepreneurship Challenge tasks and authored the NEC 2026 Annual Report for E-Cell, IIT Bombay.</p>
+        <p class="milestone-cite">Team RIIM Innovisionaries · NEC2620041</p>
+      </div>
+      <div class="milestone-slide">
+        <p class="milestone-quote">Published 18 LinkedIn articles under “The Startup Files” for E-Cell RIIM Pune while supporting campus founders at RIIMAGINE Pitch Arena 2026.</p>
+        <p class="milestone-cite">Editorial Leadership · E-Cell RIIM Pune</p>
+      </div>
+      <div class="milestone-slide">
+        <p class="milestone-quote">Built a ₹3,52,000 two-day E-Summit financial budget model and architecture for VentureHorizon 2026 alongside automated NSE/BSE daily market briefings.</p>
+        <p class="milestone-cite">VentureHorizon 2026 · Financial Modeling</p>
+      </div>
+      <div class="slider-dots">
+        <button type="button" class="dot active" data-idx="0" aria-label="Milestone 1"></button>
+        <button type="button" class="dot" data-idx="1" aria-label="Milestone 2"></button>
+        <button type="button" class="dot" data-idx="2" aria-label="Milestone 3"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Footer -->
+  <footer id="contact" class="footer">
+    <div class="container">
+      <h2 class="footer-h2">Open to conversations.</h2>
+      <p class="footer-sub">Available for Finance, Quant Research, and Fintech internships, equity research collaborations, and E-Cell initiatives.</p>
+      <div class="footer-actions">
+        <a href="mailto:atrisana.riim2628@gmail.com" class="btn btn-teal">Email Atri</a>
+        <a href="https://www.linkedin.com/in/atrisana001" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn ↗</a>
+        <a href="https://wa.me/919477549451" target="_blank" rel="noopener" class="btn btn-ghost">WhatsApp ↗</a>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 Atri Sana &middot; RIIM Pune</span>
+        <a href="#top">Back to top &#8593;</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Project Modal -->
+  <div class="modal-backdrop" id="projectModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-dialog">
+      <button type="button" class="modal-close" id="modalClose" aria-label="Close modal">&times;</button>
+      <div class="modal-visual" id="modalVisual"></div>
+      <div class="modal-content">
+        <p class="hero-eyebrow" id="modalCat" style="color: var(--teal); margin-bottom: 6px;"></p>
+        <h3 class="modal-title" id="modalTitle"></h3>
+        <p class="modal-desc" id="modalDesc"></p>
+        <ul class="modal-bullets" id="modalBullets"></ul>
+        <div class="modal-tags" id="modalTags"></div>
+        <div id="modalLinks"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">Email copied: atrisana.riim2628@gmail.com</div>
+
+  <script>
+    const projects = [
+      {
+        cat: 'Quant & Python',
+        title: 'Indian Stock Portfolio Optimizer (MPT)',
+        summary: 'Python + Streamlit Max-Sharpe & discrete INR allocation engine for NSE stocks.',
+        desc: 'Interactive quantitative portfolio construction tool applying Modern Portfolio Theory to Indian equities listed on the NSE.',
+        bullets: [
+          'Pulls historical equity series via yfinance and computes expected returns and covariance matrices.',
+          'Solves for Max-Sharpe and Min-Volatility weights with discrete INR share allocation.'
+        ],
+        tags: ['Python', 'Streamlit', 'PyPortfolioOpt', 'yfinance', 'pandas', 'NumPy'],
+        linkLabel: 'Inquire via Email',
+        linkHref: 'mailto:atrisana.riim2628@gmail.com?subject=Indian%20Stock%20Portfolio%20Optimizer',
+        svg: `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="250" fill="#e6f2f0"/><path d="M60 200 Q 130 85 340 55" fill="none" stroke="#0f766e" stroke-width="3.5" stroke-linecap="round"/><circle cx="165" cy="105" r="7" fill="#0f766e"/><circle cx="165" cy="105" r="15" fill="rgba(15,118,110,0.18)"/><text x="186" y="102" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#0f766e">Max-Sharpe</text><text x="36" y="34" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#475569">EFFICIENT FRONTIER (NSE · INR)</text></svg>`
+      },
+      {
+        cat: 'Quant & Python',
+        title: 'Daily NSE / BSE Equity Market Reports',
+        summary: 'AlphaLens & Atri Lens automated briefings covering Nifty, Sensex, and FII/DII flows.',
+        desc: 'Automated daily equity market reporting pipeline built to synthesize index performance, breadth, and institutional flow data.',
+        bullets: [
+          'Tracks daily Nifty 50 and Sensex moves alongside net FII/DII institutional activity.',
+          'Formats structured market takeaways under AlphaLens & Atri Lens.'
+        ],
+        tags: ['Python', 'NSE / BSE', 'FII/DII Flows', 'Equity Research', 'Matplotlib'],
+        linkLabel: 'Request Sample Report',
+        linkHref: 'mailto:atrisana.riim2628@gmail.com?subject=Sample%20NSE%2FBSE%20Market%20Report',
+        svg: `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="250" fill="#e6f2f0"/><text x="36" y="34" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#475569">ALPHALENS · NIFTY &amp; FII/DII</text><rect x="45" y="130" width="30" height="70" rx="3" fill="#0f766e"/><rect x="88" y="100" width="30" height="100" rx="3" fill="#14b8a6"/><rect x="131" y="145" width="30" height="55" rx="3" fill="#5eead4"/><rect x="174" y="80" width="30" height="120" rx="3" fill="#0f766e"/><rect x="217" y="110" width="30" height="90" rx="3" fill="#115e59"/><rect x="260" y="68" width="30" height="132" rx="3" fill="#0f766e"/><rect x="303" y="95" width="30" height="105" rx="3" fill="#14b8a6"/></svg>`
+      },
+      {
+        cat: 'Fintech & Research',
+        title: 'Digital Lending Platforms: Global & India',
+        summary: 'Market sizing ($23.8B, 23.5% CAGR), Account Aggregator, and AI underwriting.',
+        desc: 'Sector research analyzing global digital lending expansion ($23.8B market, 23.5% CAGR as reported) and India’s digital credit infrastructure.',
+        bullets: [
+          'Evaluates consent-driven financial data sharing via India’s Account Aggregator framework.',
+          'Compares traditional underwriting against AI-assisted cashflow scoring.'
+        ],
+        tags: ['Fintech', 'Market Sizing', 'Account Aggregator', 'AI Underwriting'],
+        linkLabel: 'Request Research Deck',
+        linkHref: 'mailto:atrisana.riim2628@gmail.com?subject=Digital%20Lending%20Research',
+        svg: `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="250" fill="#e6f2f0"/><text x="36" y="36" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#475569">DIGITAL LENDING · GLOBAL &amp; INDIA</text><text x="36" y="122" font-family="IBM Plex Serif, Georgia, serif" font-size="48" font-weight="600" fill="#0f766e">$23.8B</text><text x="38" y="156" font-family="Inter, sans-serif" font-size="15" font-weight="600" fill="#1e293b">23.5% CAGR (Global)</text><rect x="36" y="182" width="320" height="8" rx="4" fill="#cbd5e1"/><rect x="36" y="182" width="230" height="8" rx="4" fill="#0f766e"/></svg>`
+      },
+      {
+        cat: 'E-Cell & Leadership',
+        title: 'RIIM — NEC 2026 Annual Report',
+        summary: 'Co-Editor-In-Chief & Design Lead · 1,260 / 1,170 points (108% as reported).',
+        desc: 'Led editorial compilation and publication design for RIIM Pune’s National Entrepreneurship Challenge 2026 submission to E-Cell, IIT Bombay.',
+        bullets: [
+          'Documented 11 completed NEC tasks under Team RIIM Innovisionaries (NEC2620041).',
+          'Achieved 1,260 / 1,170 points (108% as reported) with institutional editorial layout.'
+        ],
+        tags: ['Editorial Design', 'E-Cell IIT Bombay', 'NEC 2026', 'Leadership'],
+        linkLabel: 'View Profile on LinkedIn ↗',
+        linkHref: 'https://www.linkedin.com/in/atrisana001',
+        svg: `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="250" fill="#0d3b3e"/><text x="36" y="42" font-family="Inter, sans-serif" font-size="10" font-weight="700" letter-spacing="1.2" fill="#5eead4">NEC 2026 · RIIM INNOVISIONARIES</text><text x="36" y="132" font-family="IBM Plex Serif, Georgia, serif" font-size="56" font-weight="600" fill="#ffffff">108%</text><text x="36" y="168" font-family="Inter, sans-serif" font-size="14" fill="#ccfbf1">1,260 / 1,170 Points · 11 Tasks</text></svg>`
+      },
+      {
+        cat: 'E-Cell & Leadership',
+        title: 'VentureHorizon 2026 — E-Summit Blueprint',
+        summary: 'Two-day summit architecture, speaker outreach, and ₹3,52,000 budget model.',
+        desc: 'Designed the operational and financial blueprint for VentureHorizon 2026, balancing programming ambition with disciplined INR cost controls.',
+        bullets: [
+          'Built a line-item ₹3,52,000 budget model covering venue, hospitality, prizes, and marketing.',
+          'Structured sponsorship tiers and speaker outreach workflows.'
+        ],
+        tags: ['Financial Modeling (INR)', 'Event Budgeting', 'E-Summit', 'Operations'],
+        linkLabel: 'Request Blueprint Overview',
+        linkHref: 'mailto:atrisana.riim2628@gmail.com?subject=VentureHorizon%202026%20Blueprint',
+        svg: `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="250" fill="#e6f2f0"/><text x="36" y="38" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#475569">VENTUREHORIZON 2026 · BUDGET</text><text x="36" y="126" font-family="IBM Plex Serif, Georgia, serif" font-size="44" font-weight="600" fill="#0f766e">₹3,52,000</text><text x="38" y="160" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#1e293b">2-Day E-Summit Financial Model</text></svg>`
+      },
+      {
+        cat: 'Editorial Leadership',
+        title: '“The Startup Files” — Editorial Series',
+        summary: '18 published LinkedIn articles for E-Cell RIIM Pune & RIIMAGINE Pitch Arena.',
+        desc: 'Spearheaded consistent editorial output for E-Cell RIIM Pune, translating founder journeys and startup frameworks into 18 published LinkedIn articles.',
+        bullets: [
+          'Authored and edited 18 installments of “The Startup Files” on LinkedIn.',
+          'Supported campus founder pitches for RIIMAGINE Pitch Arena 2026.'
+        ],
+        tags: ['Editorial Leadership', 'LinkedIn', 'E-Cell RIIM', 'RIIMAGINE 2026'],
+        linkLabel: 'Read on LinkedIn ↗',
+        linkHref: 'https://www.linkedin.com/in/atrisana001',
+        svg: `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="250" fill="#091e20"/><text x="36" y="42" font-family="Inter, sans-serif" font-size="10" font-weight="700" letter-spacing="1.2" fill="#5eead4">E-CELL RIIM PUNE · EDITORIAL</text><text x="36" y="122" font-family="IBM Plex Serif, Georgia, serif" font-size="30" font-weight="600" fill="#ffffff">“The Startup Files”</text><text x="36" y="160" font-family="Inter, sans-serif" font-size="14" fill="#cbd5e1">18 Published LinkedIn Articles</text></svg>`
+      }
+    ];
+
+    const worksGrid = document.getElementById('worksGrid');
+    const modal = document.getElementById('projectModal');
+
+    projects.forEach((p) => {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'work-card';
+      card.innerHTML = `
+        <div class="work-thumb">${p.svg}</div>
+        <div class="work-body">
+          <div class="work-cat">${p.cat}</div>
+          <h3 class="work-title">${p.title}</h3>
+          <p class="work-summary">${p.summary}</p>
+        </div>
+      `;
+      card.addEventListener('click', () => openModal(p));
+      worksGrid.appendChild(card);
+    });
+
+    function openModal(p) {
+      document.getElementById('modalVisual').innerHTML = p.svg;
+      document.getElementById('modalCat').textContent = p.cat;
+      document.getElementById('modalTitle').textContent = p.title;
+      document.getElementById('modalDesc').textContent = p.desc;
+      document.getElementById('modalBullets').innerHTML = p.bullets.map((b) => `<li>${b}</li>`).join('');
+      document.getElementById('modalTags').innerHTML = p.tags.map((t) => `<span class="pill">${t}</span>`).join('');
+      const isExt = p.linkHref.startsWith('http');
+      document.getElementById('modalLinks').innerHTML = `<a href="${p.linkHref}" ${isExt ? 'target="_blank" rel="noopener"' : ''} class="btn btn-teal">${p.linkLabel}</a>`;
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+
+    // Milestone Dots
+    const slides = document.querySelectorAll('.milestone-slide');
+    const dots = document.querySelectorAll('.dot');
+    dots.forEach((d) => {
+      d.addEventListener('click', () => {
+        const idx = Number(d.dataset.idx);
+        slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+        dots.forEach((dt, i) => dt.classList.toggle('active', i === idx));
+      });
+    });
+
+    // Mobile Toggle
+    const mobileToggle = document.getElementById('mobileToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileToggle.addEventListener('click', () => {
+      const open = mobileMenu.classList.toggle('open');
+      mobileToggle.setAttribute('aria-expanded', String(open));
+    });
+    mobileMenu.querySelectorAll('a').forEach((a) => {
+      a.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        mobileToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Print CV
+    document.getElementById('printCvBtn').addEventListener('click', () => window.print());
+
+    // Copy Email
+    const toast = document.getElementById('toast');
+    document.getElementById('copyEmailBtn').addEventListener('click', () => {
+      const email = 'atrisana.riim2628@gmail.com';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(email).catch(() => {});
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = email;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    });
+  </script>
+</body>
+</html>
