@@ -625,7 +625,7 @@
       display: grid;
       grid-template-columns: 2fr 1fr 1fr 1fr;
       gap: 16px;
-      align-items: end;
+      align-items: start;
     }
 
     .opt-field label {
@@ -636,6 +636,7 @@
       text-transform: uppercase;
       color: var(--ink-muted);
       margin-bottom: 6px;
+      white-space: nowrap;
     }
 
     .opt-field input {
@@ -1146,7 +1147,7 @@
   <!-- Centered Top Nav -->
   <header class="top-nav">
     <div class="container nav-inner">
-      <a href="#top" class="active">Home</a>
+      <a href="#top">Home</a>
       <a href="#about">About</a>
       <a href="#resume">Resume</a>
       <a href="#works">Works</a>
@@ -1239,7 +1240,7 @@
             <h3>E-Cell RIIM Pune — Team RIIM Innovisionaries</h3>
             <p class="resume-meta">Co-Editor-In-Chief &amp; Design Lead (NEC2620041) &middot; Jul – Oct 2026</p>
             <p class="resume-desc">
-              Compiled and designed the NEC 2026 Annual Report for E-Cell, IIT Bombay, contributing to 11 completed NEC tasks (1,260 / 1,170 points, 108% as reported). Supported RIIMAGINE Pitch Arena 2026 and authored/edited 18 LinkedIn articles in <em>“The Startup Files”</em>.
+              Compiled and designed the NEC 2026 Annual Report for E-Cell, IIT Bombay, contributing to 11 completed NEC tasks (1,260 / 1,170 points, 108%). Supported RIIMAGINE Pitch Arena 2026 and authored/edited 18 LinkedIn articles in <em>“The Startup Files”</em>.
             </p>
           </div>
         </div>
@@ -1320,7 +1321,7 @@
               <p class="opt-hint">Just type NSE symbols · e.g. RELIANCE, WIPRO, SBIN &nbsp;·&nbsp; <strong>.NS is added automatically</strong></p>
             </div>
             <div class="opt-field">
-              <label for="optAmount">Capital (₹ INR)</label>
+              <label for="optAmount">Capital (INR)</label>
               <input id="optAmount" type="number" min="1000" step="1000" value="100000" required />
             </div>
             <div class="opt-field">
@@ -1408,7 +1409,7 @@
     <div class="container">
       <div class="quote-mark" aria-hidden="true">&ldquo;</div>
       <div class="milestone-slide active">
-        <p class="milestone-quote">Delivered 1,260 / 1,170 points (108% as reported) across 11 National Entrepreneurship Challenge tasks and authored the NEC 2026 Annual Report for E-Cell, IIT Bombay.</p>
+        <p class="milestone-quote">Delivered 1,260 / 1,170 points (108%) across 11 National Entrepreneurship Challenge tasks and authored the NEC 2026 Annual Report for E-Cell, IIT Bombay.</p>
         <p class="milestone-cite">Team RIIM Innovisionaries · NEC2620041</p>
       </div>
       <div class="milestone-slide">
@@ -1509,11 +1510,11 @@
       {
         cat: 'E-Cell & Leadership',
         title: 'RIIM — NEC 2026 Annual Report',
-        summary: 'Co-Editor-In-Chief & Design Lead · 1,260 / 1,170 points (108% as reported).',
+        summary: 'Co-Editor-In-Chief & Design Lead · 1,260 / 1,170 points (108%).',
         desc: 'Led editorial compilation and publication design for RIIM Pune’s National Entrepreneurship Challenge 2026 submission to E-Cell, IIT Bombay.',
         bullets: [
           'Documented 11 completed NEC tasks under Team RIIM Innovisionaries (NEC2620041).',
-          'Achieved 1,260 / 1,170 points (108% as reported) with institutional editorial layout.'
+          'Achieved 1,260 / 1,170 points (108%) with institutional editorial layout.'
         ],
         tags: ['Editorial Design', 'E-Cell IIT Bombay', 'NEC 2026', 'Leadership'],
         linkLabel: 'View Profile on LinkedIn ↗',
@@ -1606,6 +1607,38 @@
       });
     });
 
+    // Scrollspy — update active nav link as user scrolls
+    (function initScrollspy() {
+      const navLinks = document.querySelectorAll('.nav-inner a, .mobile-menu a');
+      const sections = Array.from(document.querySelectorAll('section[id], header[id], div[id]'))
+        .filter(el => document.querySelector(`.nav-inner a[href="#${el.id}"]`));
+
+      function getActive() {
+        if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 20) {
+          return sections[sections.length - 1] ? sections[sections.length - 1].id : null;
+        }
+        const scrollY = window.scrollY + 80; // offset for fixed nav
+        let current = sections[0];
+        for (const sec of sections) {
+          if (sec.offsetTop <= scrollY) current = sec;
+        }
+        return current ? current.id : null;
+      }
+
+      function updateNav() {
+        const id = getActive();
+        navLinks.forEach(a => {
+          const href = a.getAttribute('href');
+          const matches = href === '#' + id || (href === '#top' && id === null);
+          a.classList.toggle('active', matches);
+        });
+      }
+
+      window.addEventListener('scroll', updateNav, { passive: true });
+      window.addEventListener('resize', updateNav, { passive: true });
+      updateNav();
+    })();
+
     // Mobile Toggle
     const mobileToggle = document.getElementById('mobileToggle');
     const mobileMenu = document.getElementById('mobileMenu');
@@ -1643,6 +1676,8 @@
 
     // Live MPT Portfolio Optimizer
     const MPT_API_URL = 'https://mpt-saj5.onrender.com/api';
+    // Pre-warm Render backend silently on page load to reduce cold-start delay
+    fetch(MPT_API_URL + '?tickers=RELIANCE.NS&amount=1000&start=2024-01-01&end=2024-01-02').catch(() => {});
     const mptForm = document.getElementById('mptForm');
     const optRunBtn = document.getElementById('optRunBtn');
     const optResetBtn = document.getElementById('optResetBtn');
@@ -1704,7 +1739,12 @@
       optError.style.display = 'none';
       optRunBtn.disabled = true;
       optRunBtn.textContent = '⏳ Optimizing…';
-      optStatus.textContent = 'Fetching NSE data & solving (first call on Render free tier may take ~30–60s)…';
+      let _elapsed = 0;
+      const _timer = setInterval(() => {
+        _elapsed++;
+        optStatus.textContent = `Fetching NSE data & optimising… ${_elapsed}s elapsed (Render cold-start may take ~30–60s)`;
+      }, 1000);
+      optStatus.textContent = 'Fetching NSE data & solving…';
       document.getElementById('optRfNote').style.display = 'none';
 
       try {
@@ -1789,6 +1829,7 @@
         optError.style.display = 'block';
         optStatus.textContent = 'Optimization failed.';
       } finally {
+        clearInterval(_timer);
         optRunBtn.disabled = false;
         optRunBtn.textContent = '⚡ Optimize Portfolio';
       }
